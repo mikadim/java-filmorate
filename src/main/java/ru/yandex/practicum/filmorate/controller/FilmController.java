@@ -60,4 +60,9 @@ public class FilmController {
     public List<Film> getAllFilms() {
         return films;
     }
+
+    @DeleteMapping
+    public void deleteUsers(){
+        films.clear();
+    }
 }

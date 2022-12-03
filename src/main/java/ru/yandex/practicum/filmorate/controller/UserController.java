@@ -17,6 +17,8 @@ import ru.yandex.practicum.filmorate.utils.IdGenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
+
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
@@ -56,9 +58,14 @@ public class UserController {
         return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping
+    @GetMapping (produces = APPLICATION_JSON_VALUE)
     public List<User> getAllUsers() {
         return users;
+    }
+
+    @DeleteMapping
+    public void deleteUsers(){
+        users.clear();
     }
 
 }
