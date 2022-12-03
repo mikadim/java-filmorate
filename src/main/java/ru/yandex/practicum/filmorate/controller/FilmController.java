@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utils.IdGenerator;
+import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,10 @@ public class FilmController {
     private List<Film> films = new ArrayList<>();
     private final ConversionService conversionService;
     private final FilmMapper filmMapper;
-    private IdGenerator idGenerator;
+    private FilmIdGenerator idGenerator;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    public FilmController(ConversionService conversionService, FilmMapper filmMapper, IdGenerator idGenerator) {
+    public FilmController(ConversionService conversionService, FilmMapper filmMapper, FilmIdGenerator idGenerator) {
         this.conversionService = conversionService;
         this.filmMapper = filmMapper;
         this.idGenerator = idGenerator;
@@ -64,6 +65,6 @@ public class FilmController {
     @DeleteMapping (value = "/clearfortest")
     public void deleteFilms(){
         films.clear();
-        idGenerator=new IdGenerator();
+        idGenerator=new FilmIdGenerator();
     }
 }
