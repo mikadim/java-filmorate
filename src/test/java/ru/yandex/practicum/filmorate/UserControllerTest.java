@@ -19,7 +19,7 @@ import ru.yandex.practicum.filmorate.controller.UserController;
         DefaultFormattingConversionService.class
 })
 public abstract class UserControllerTest{
-    protected static final String PERSON_V1_URL = "/users";
+
 
     protected MockMvc mockMvc;
 

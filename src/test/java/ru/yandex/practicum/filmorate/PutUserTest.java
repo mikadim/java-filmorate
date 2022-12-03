@@ -31,9 +31,9 @@ class PutPeopleTest extends UserControllerTest {
     @SuppressWarnings("OptionalGetWithoutIsPresent")
     @DisplayName("1. Проверяем изменение человека на данные из json'а")
     void getIntervalsTest() throws Exception {
-        MockHttpServletRequestBuilder request = put(PERSON_V1_URL + "/1")
+        MockHttpServletRequestBuilder request = put("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(readRequest("put/json/data", "person-for-change.json"));
+                .content(readRequest("json", "user.json"));
 
         mockMvc.perform(request)
                 .andExpect(status().isOk());
