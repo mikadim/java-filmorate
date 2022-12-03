@@ -34,6 +34,7 @@ public class UserControllerTest {
         mockMvc.perform(delete(USER_URL_PATH_TEST));
     }
 
+    
     @Test
     @Order(1)
     @DisplayName("1. Корректный PUT проходит без ошибок")
