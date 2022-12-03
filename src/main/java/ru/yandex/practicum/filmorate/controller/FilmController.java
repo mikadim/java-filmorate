@@ -23,7 +23,7 @@ public class FilmController {
     private List<Film> films = new ArrayList<>();
     private final ConversionService conversionService;
     private final FilmMapper filmMapper;
-    private final IdGenerator idGenerator;
+    private IdGenerator idGenerator;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public FilmController(ConversionService conversionService, FilmMapper filmMapper, IdGenerator idGenerator) {
@@ -61,8 +61,9 @@ public class FilmController {
         return films;
     }
 
-    @DeleteMapping
-    public void deleteUsers(){
+    @DeleteMapping (value = "/clearfortest")
+    public void deleteFilms(){
         films.clear();
+        idGenerator=new IdGenerator();
     }
 }

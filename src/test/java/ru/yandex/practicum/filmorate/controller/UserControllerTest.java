@@ -24,14 +24,14 @@ import static ru.yandex.practicum.filmorate.utils.TestControllerUtils.readReques
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest {
     public final static String USER_URL_PATH = "/users";
+    public final static String USER_URL_PATH_TEST = "/users/clearfortest";
 
     @Autowired
     private MockMvc mockMvc;
 
-
     @BeforeEach
     public void setUp() throws Exception {
-        mockMvc.perform(delete(USER_URL_PATH));
+        mockMvc.perform(delete(USER_URL_PATH_TEST));
     }
 
     @Test

@@ -18,10 +18,11 @@ import static ru.yandex.practicum.filmorate.utils.TestControllerUtils.readReques
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FilmControllerTest {
     public final static String FILM_URL_PATH = "/films";
+    public final static String FILM_URL_PATH_TEST = "/films/clearfortest";
 
     @BeforeEach
     public void setUp() throws Exception {
-        mockMvc.perform(delete(FILM_URL_PATH));
+        mockMvc.perform(delete(FILM_URL_PATH_TEST));
     }
 
     @Autowired

@@ -25,7 +25,7 @@ public class UserController {
     private List<User> users = new ArrayList<>();
     private final ConversionService conversionService;
     private final UserMapper userMapper;
-    private final IdGenerator idGenerator;
+    private IdGenerator idGenerator;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public UserController(ConversionService conversionService, UserMapper userMapper, IdGenerator idGenerator) {
@@ -63,9 +63,10 @@ public class UserController {
         return users;
     }
 
-    @DeleteMapping
+    @DeleteMapping (value = "/clearfortest")
     public void deleteUsers(){
         users.clear();
+        idGenerator=new IdGenerator();
     }
 
 }
