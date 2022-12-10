@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import static ru.yandex.practicum.filmorate.utils.FilmValidatorTestUtil.getFilmRequestDto;
 
 public class FilmValidatorTest {
-    FilmRequestDto filmRequestDto;
+    private FilmRequestDto filmRequestDto;
     private static final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @BeforeEach

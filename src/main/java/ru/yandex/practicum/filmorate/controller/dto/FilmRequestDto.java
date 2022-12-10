@@ -2,15 +2,15 @@ package ru.yandex.practicum.filmorate.controller.dto;
 
 import ru.yandex.practicum.filmorate.controller.validator.FilmValid;
 
-import javax.validation.constraints.*;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 
 @FilmValid
 public class FilmRequestDto {
     private int id;
-    @NotNull
     @NotBlank
-    @NotEmpty
     private String name;
     private String description;
     private LocalDate releaseDate;

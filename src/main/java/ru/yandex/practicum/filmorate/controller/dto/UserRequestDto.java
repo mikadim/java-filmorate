@@ -5,22 +5,16 @@ import ru.yandex.practicum.filmorate.controller.validator.UserValid;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 @UserValid
 public class UserRequestDto {
     private int id;
-    @NotNull
     @NotBlank
-    @NotEmpty
     @Email
     private String email;
-    @NotNull
     @NotBlank
-    @NotEmpty
     private String login;
     private String name;
     private LocalDate birthday;

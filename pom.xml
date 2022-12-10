@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-	<parent>
+    <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.6.6</version>
@@ -21,9 +21,14 @@
         <maven.compiler.target>11</maven.compiler.target>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <spring.boot.version>2.6.6</spring.boot.version>
+        <hibernate.validator.version>6.1.6.Final</hibernate.validator.version>
+        <aspectjweaver.version>1.9.9</aspectjweaver.version>
+        <swagger.annotations.version>2.1.11</swagger.annotations.version>
+        <springdoc.openapi.version>1.5.13</springdoc.openapi.version>
+        <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
     </properties>
 
-	<dependencies>
+    <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -39,32 +44,32 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.4.2.Final</version>
+            <version>${mapstruct.version}</version>
         </dependency>
 
         <!--validate-->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.1.6.Final</version>
+            <version>${hibernate.validator.version}</version>
         </dependency>
         <!--aspectj-->
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.9.9</version>
+            <version>${aspectjweaver.version}</version>
         </dependency>
 
         <!--swagger spring-doc-->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>2.1.11</version>
+            <version>${swagger.annotations.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.13</version>
+            <version>${springdoc.openapi.version}</version>
         </dependency>
 
         <!--test-->
@@ -82,8 +87,6 @@
         </dependency>
 
 
-
-
     </dependencies>
 
     <build>
@@ -91,7 +94,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>

@@ -33,7 +33,7 @@ public class FilmController {
         this.idGenerator = idGenerator;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<Film> addFilm(@RequestBody @Valid @NotNull FilmRequestDto dto) {
         dto.setId(idGenerator.getId());
         Film film = conversionService.convert(dto, Film.class);
@@ -42,9 +42,9 @@ public class FilmController {
         return new ResponseEntity<Film>(film, HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<Film> updateUser(@RequestBody @Valid @NotNull FilmRequestDto dto) {
-        // Film film = filmMapper.mapToFilm(dto);
+
         Film film = conversionService.convert(dto, Film.class);
 
         for (int i = 0; i < films.size(); i++) {
@@ -62,9 +62,9 @@ public class FilmController {
         return films;
     }
 
-    @DeleteMapping (value = "/clearfortest")
-    public void deleteFilms(){
+    @DeleteMapping(value = "/clearfortest")
+    public void deleteFilms() {
         films.clear();
-        idGenerator=new FilmIdGenerator();
+        idGenerator = new FilmIdGenerator();
     }
 }

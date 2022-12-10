@@ -34,7 +34,7 @@ public class UserController {
         this.idGenerator = idGenerator;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid @NotNull UserRequestDto dto) {
         dto.setId(idGenerator.getId());
         User user = conversionService.convert(dto, User.class);
@@ -43,9 +43,8 @@ public class UserController {
         return new ResponseEntity<User>(user, HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<User> updateUser(@RequestBody @Valid @NotNull UserRequestDto dto) {
-        // User user = userMapper.mapToUser(dto);
         User user = conversionService.convert(dto, User.class);
 
         for (int i = 0; i < users.size(); i++) {
@@ -58,15 +57,15 @@ public class UserController {
         return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping (produces = APPLICATION_JSON_VALUE)
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<User> getAllUsers() {
         return users;
     }
 
-    @DeleteMapping (value = "/clearfortest")
-    public void deleteUsers(){
+    @DeleteMapping(value = "/clearfortest")
+    public void deleteUsers() {
         users.clear();
-        idGenerator=new UserIdGenerator();
+        idGenerator = new UserIdGenerator();
     }
 
 }
