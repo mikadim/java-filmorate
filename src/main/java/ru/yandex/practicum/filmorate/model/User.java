@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class User {
@@ -11,6 +12,7 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
+    private Set<Integer> friends;
 
     public int getId() {
         return id;
@@ -50,6 +52,18 @@ public class User {
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public Set<Integer> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<Integer> friends) {
+        this.friends = friends;
+    }
+
+    public void setFriend(Integer id) {
+        this.friends.add(id);
     }
 
     @Override

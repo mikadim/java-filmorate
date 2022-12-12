@@ -12,59 +12,84 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
-
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping(value = "/films")
 public class FilmController {
-    private List<Film> films = new ArrayList<>();
     private final ConversionService conversionService;
     private final FilmMapper filmMapper;
-    private FilmIdGenerator idGenerator;
+    private final FilmService service;
+    private final FilmStorage storage;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    public FilmController(ConversionService conversionService, FilmMapper filmMapper, FilmIdGenerator idGenerator) {
+    public FilmController(ConversionService conversionService, FilmMapper filmMapper,
+                          FilmService service, FilmStorage storage) {
         this.conversionService = conversionService;
         this.filmMapper = filmMapper;
-        this.idGenerator = idGenerator;
+        this.service = service;
+        this.storage = storage;
     }
 
     @PostMapping
     public ResponseEntity<Film> addFilm(@RequestBody @Valid @NotNull FilmRequestDto dto) {
-        dto.setId(idGenerator.getId());
-        Film film = conversionService.convert(dto, Film.class);
-        films.add(film);
+        Film film = storage.addFilm(dto);
         log.info("Добавлен новый фильм: {}", film.toString());
         return new ResponseEntity<Film>(film, HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateUser(@RequestBody @Valid @NotNull FilmRequestDto dto) {
-
-        Film film = conversionService.convert(dto, Film.class);
-
-        for (int i = 0; i < films.size(); i++) {
-            if (films.get(i).getId() == film.getId()) {
-                films.set(i, film);
-                log.info("Добавлен новый фильм: {}", film.toString());
-                return new ResponseEntity<Film>(film, HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<Film>(film, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Film> updateFilm(@RequestBody @Valid @NotNull FilmRequestDto dto) {
+        Film film = storage.updateFilm(dto);
+        log.info("Обновление данных фильма: {}", film.toString());
+        return new ResponseEntity<Film>(film, HttpStatus.OK);
     }
 
     @GetMapping
-    public List<Film> getAllFilms() {
-        return films;
+    public ResponseEntity<List<Film>> getAllFilms() {
+        return new ResponseEntity<>(storage.getFilms(), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/clearfortest")
+    @GetMapping("/{id}")
+    public ResponseEntity<Film> getFilm(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(storage.getFilm(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addLike(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
+        service.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteLike(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
+        service.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<Film>> getPopular(@RequestParam(name = "count", defaultValue = "10") Integer count) {
+        List<Film> films = storage.getFilms().stream()
+                .sorted((p0, p1) ->
+                        p1.getLikes().size() - p0.getLikes().size()
+                )
+                .limit(count)
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(films, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/clear-for-test")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteFilms() {
-        films.clear();
-        idGenerator = new FilmIdGenerator();
+        List<Integer> collect = storage.getFilms().stream().map(film -> film.getId()).collect(Collectors.toList());
+        for (Integer id : collect) {
+            storage.deleteFilm(id);
+        }
     }
 }

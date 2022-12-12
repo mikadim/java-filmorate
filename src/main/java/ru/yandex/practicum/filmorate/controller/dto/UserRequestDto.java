@@ -7,6 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @UserValid
 public class UserRequestDto {
@@ -18,6 +19,7 @@ public class UserRequestDto {
     private String login;
     private String name;
     private LocalDate birthday;
+    private Set<Integer> friends;
 
     public int getId() {
         return id;
@@ -57,6 +59,14 @@ public class UserRequestDto {
 
     public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
+    }
+
+    public Set<Integer> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(Set<Integer> friends) {
+        this.friends = friends;
     }
 
     @Override

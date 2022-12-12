@@ -6,12 +6,14 @@ import ru.yandex.practicum.filmorate.controller.converter.exceptions.DtoExceptio
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.HashSet;
+
 @Component
 public class FilmRequestDtoToFilm implements Converter<FilmRequestDto, Film> {
 
     @Override
     public Film convert(FilmRequestDto dto) {
-        if (dto==null) {
+        if (dto == null) {
             throw new DtoException("пустой dto не подлежит конвертации в объект Film");
         }
         Film film = new Film();
@@ -20,6 +22,11 @@ public class FilmRequestDtoToFilm implements Converter<FilmRequestDto, Film> {
         film.setDescription(dto.getDescription());
         film.setReleaseDate(dto.getReleaseDate());
         film.setDuration(dto.getDuration());
+        if (dto.getLikes() != null) {
+            film.setLikes(dto.getLikes());
+        } else {
+            film.setLikes(new HashSet<Integer>());
+        }
         return film;
     }
 }

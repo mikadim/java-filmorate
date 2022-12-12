@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class Film {
@@ -11,6 +12,7 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
+    private Set<Integer> likes;
 
     public int getId() {
         return id;
@@ -50,6 +52,18 @@ public class Film {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public Set<Integer> getLikes() {
+        return likes;
+    }
+
+    public void setLike(Integer id) {
+        this.likes.add(id);
+    }
+
+    public void setLikes(Set<Integer> likes) {
+        this.likes = likes;
     }
 
     @Override

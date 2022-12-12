@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.controller.validator.FilmValid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.Set;
 
 @FilmValid
 public class FilmRequestDto {
@@ -16,6 +17,7 @@ public class FilmRequestDto {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private Set<Integer> likes;
 
     public int getId() {
         return id;
@@ -55,6 +57,14 @@ public class FilmRequestDto {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public Set<Integer> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Set<Integer> likes) {
+        this.likes = likes;
     }
 
     @Override

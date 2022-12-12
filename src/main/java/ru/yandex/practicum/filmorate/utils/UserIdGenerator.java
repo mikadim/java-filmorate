@@ -9,4 +9,8 @@ public class UserIdGenerator {
     public int getId() {
         return ++id;
     }
+
+    public void setForTest() {
+        id = 0;
+    }
 }

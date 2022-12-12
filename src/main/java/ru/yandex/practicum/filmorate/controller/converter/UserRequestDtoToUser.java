@@ -6,12 +6,14 @@ import ru.yandex.practicum.filmorate.controller.converter.exceptions.DtoExceptio
 import ru.yandex.practicum.filmorate.controller.dto.UserRequestDto;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.HashSet;
+
 @Component
 public class UserRequestDtoToUser implements Converter<UserRequestDto, User> {
 
     @Override
     public User convert(UserRequestDto dto) {
-        if (dto==null) {
+        if (dto == null) {
             throw new DtoException("пустой dto не подлежит конвертации в объект Film");
         }
         User user = new User();
@@ -20,6 +22,12 @@ public class UserRequestDtoToUser implements Converter<UserRequestDto, User> {
         user.setLogin(dto.getLogin());
         user.setName(dto.getName());
         user.setBirthday(dto.getBirthday());
+        if (dto.getFriends() != null) {
+            user.setFriends(dto.getFriends());
+        } else {
+            user.setFriends(new HashSet<Integer>());
+        }
+
         return user;
     }
 }
