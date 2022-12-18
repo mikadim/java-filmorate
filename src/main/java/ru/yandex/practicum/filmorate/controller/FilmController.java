@@ -15,6 +15,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.exception.FilmStrorageError;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,39 +27,36 @@ public class FilmController {
     private final ConversionService conversionService;
     private final FilmMapper filmMapper;
     private final FilmService service;
-    private final FilmStorage storage;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    public FilmController(ConversionService conversionService, FilmMapper filmMapper,
-                          FilmService service, FilmStorage storage) {
+    public FilmController(ConversionService conversionService, FilmMapper filmMapper, FilmService service) {
         this.conversionService = conversionService;
         this.filmMapper = filmMapper;
         this.service = service;
-        this.storage = storage;
     }
 
     @PostMapping
     public ResponseEntity<Film> addFilm(@RequestBody @Valid @NotNull FilmRequestDto dto) {
-        Film film = storage.addFilm(dto);
+        Film film = service.addFilm(dto);
         log.info("Добавлен новый фильм: {}", film.toString());
         return new ResponseEntity<Film>(film, HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<Film> updateFilm(@RequestBody @Valid @NotNull FilmRequestDto dto) {
-        Film film = storage.updateFilm(dto);
+        Film film = service.updateFilm(dto);
         log.info("Обновление данных фильма: {}", film.toString());
         return new ResponseEntity<Film>(film, HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<Film>> getAllFilms() {
-        return new ResponseEntity<>(storage.getFilms(), HttpStatus.OK);
+        return new ResponseEntity<>(service.getFilms(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Film> getFilm(@PathVariable("id") Integer id) {
-        return new ResponseEntity<>(storage.getFilm(id), HttpStatus.OK);
+        return new ResponseEntity<>(service.getFilm(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -75,7 +73,7 @@ public class FilmController {
 
     @GetMapping("/popular")
     public ResponseEntity<List<Film>> getPopular(@RequestParam(name = "count", defaultValue = "10") Integer count) {
-        List<Film> films = storage.getFilms().stream()
+        List<Film> films = service.getFilms().stream()
                 .sorted((p0, p1) ->
                         p1.getLikes().size() - p0.getLikes().size()
                 )
@@ -87,9 +85,12 @@ public class FilmController {
     @DeleteMapping(value = "/clear-for-test")
     @ResponseStatus(HttpStatus.OK)
     public void deleteFilms() {
-        List<Integer> collect = storage.getFilms().stream().map(film -> film.getId()).collect(Collectors.toList());
+        List<Integer> collect = service.getFilms().stream().map(film -> film.getId()).collect(Collectors.toList());
         for (Integer id : collect) {
-            storage.deleteFilm(id);
+            try {
+                service.deleteFilm(id);
+            } catch (FilmStrorageError e) {
+            }
         }
     }
 }

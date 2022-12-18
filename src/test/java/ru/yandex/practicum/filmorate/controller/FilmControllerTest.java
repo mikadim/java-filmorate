@@ -20,7 +20,6 @@ import static ru.yandex.practicum.filmorate.controller.UserControllerTest.USER_U
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FilmControllerTest {
     public final static String FILM_URL_PATH = "/films";
     public final static String FILM_URL_PATH_TEST = "/films/clear-for-test";
@@ -40,7 +39,6 @@ public class FilmControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    @Order(1)
     @DisplayName("1. Корректный PUT проходит без ошибок")
     void sendCorrectPut() throws Exception {
         mockMvc.perform(
@@ -55,7 +53,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(2)
     @DisplayName("2. Корректный POST проходит без ошибок")
     void sendCorrectPost() throws Exception {
         mockMvc.perform(
@@ -66,7 +63,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(3)
     @DisplayName("3. Некорректный POST возвращает 400")
     void sendIncorrectPost() throws Exception {
         mockMvc.perform(
@@ -77,7 +73,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(4)
     @DisplayName("4. Некорректный PUT возвращает 404")
     void sendIncorrectPut() throws Exception {
         mockMvc.perform(
@@ -88,7 +83,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(5)
     @DisplayName("5. Get корректно возвращает данные")
     void sendCorrectGet() throws Exception {
         mockMvc.perform(
@@ -105,7 +99,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(6)
     @DisplayName("6. Корректный Get по id возвращает данные")
     void sendCorrectGetId() throws Exception {
         mockMvc.perform(
@@ -123,7 +116,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(7)
     @DisplayName("7. Некорректный Get по id возвращает ошибку")
     void sendIncorrectGetId() throws Exception {
         mockMvc.perform(
@@ -132,7 +124,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(8)
     @DisplayName("8. Лайк с корректным пользователем проходит без ошибок")
     void sendCorrectLikePut() throws Exception {
         mockMvc.perform(
@@ -149,7 +140,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(9)
     @DisplayName("9. Лайк с некорректным пользователем возвращает ошибку")
     void sendIncorrectLikePut() throws Exception {
         mockMvc.perform(
@@ -163,7 +153,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(10)
     @DisplayName("10. Удаление лайка корректного пользователя проходит без ошибок")
     void sendCorrectLikeDelete() throws Exception {
         mockMvc.perform(
@@ -180,7 +169,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(11)
     @DisplayName("11. Удаление лайка некорректного пользователя возвращает ошибку")
     void sendIncorrectLikeDelete() throws Exception {
         mockMvc.perform(
@@ -194,7 +182,6 @@ public class FilmControllerTest {
     }
 
     @Test
-    @Order(12)
     @DisplayName("12. Get самого популярного фильма возвращает корретный фильм")
     void getPopularFilm() throws Exception {
         mockMvc.perform(

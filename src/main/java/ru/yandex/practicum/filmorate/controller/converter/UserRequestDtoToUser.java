@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.controller.converter.exceptions.DtoExceptio
 import ru.yandex.practicum.filmorate.controller.dto.UserRequestDto;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.HashSet;
-
 @Component
 public class UserRequestDtoToUser implements Converter<UserRequestDto, User> {
 
@@ -24,10 +22,7 @@ public class UserRequestDtoToUser implements Converter<UserRequestDto, User> {
         user.setBirthday(dto.getBirthday());
         if (dto.getFriends() != null) {
             user.setFriends(dto.getFriends());
-        } else {
-            user.setFriends(new HashSet<Integer>());
         }
-
         return user;
     }
 }

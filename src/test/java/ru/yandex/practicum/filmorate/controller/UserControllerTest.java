@@ -17,7 +17,6 @@ import static ru.yandex.practicum.filmorate.utils.TestControllerUtils.readReques
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest {
     public final static String USER_URL_PATH = "/users";
     public final static String USER_URL_PATH_TEST = "/users/clear-for-test";
@@ -35,7 +34,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(1)
     @DisplayName("1. Корректный PUT проходит без ошибок")
     void sendCorrectPut() throws Exception {
         mockMvc.perform(
@@ -50,7 +48,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(2)
     @DisplayName("2. Корректный POST проходит без ошибок")
     void sendCorrectPost() throws Exception {
         mockMvc.perform(
@@ -62,7 +59,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(3)
     @DisplayName("3. Некорректный POST возвращает 400")
     void sendIncorrectPost() throws Exception {
         mockMvc.perform(
@@ -73,7 +69,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(4)
     @DisplayName("4. Не корректный PUT возвращает 400")
     void sendIncorrectPut() throws Exception {
         mockMvc.perform(
@@ -84,7 +79,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(5)
     @DisplayName("5. Get корректно возвращает данные")
     void sendCorrectGet() throws Exception {
         mockMvc.perform(

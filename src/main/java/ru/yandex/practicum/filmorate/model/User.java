@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private Set<Integer> friends;
+    private Set<Integer> friends = new HashSet<Integer>();
 
     public int getId() {
         return id;
@@ -76,7 +77,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id*3);
+        return Objects.hash(id * 3);
     }
 
     @Override
