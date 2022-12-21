@@ -4,9 +4,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.exception.FilmStrorageError;
-import ru.yandex.practicum.filmorate.storage.user.exception.UserStorageError;
+import ru.yandex.practicum.filmorate.exception.FilmStrorageError;
+import ru.yandex.practicum.filmorate.exception.UserStorageError;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 
 import java.util.ArrayList;

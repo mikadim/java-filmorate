@@ -149,7 +149,7 @@ public class FilmControllerTest {
         mockMvc.perform(
                         put(FILM_URL_PATH + "/1/like/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("error").value("Пользователь не найден"));
+                .andExpect(jsonPath("['Ошибка в хранилище пользователей - ']").value("Пользователь не найден"));
     }
 
     @Test
@@ -178,7 +178,7 @@ public class FilmControllerTest {
         mockMvc.perform(
                         delete(FILM_URL_PATH + "/1/like/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("error").value("Пользователь не найден"));
+                .andExpect(jsonPath("['Ошибка в хранилище пользователей - ']").value("Пользователь не найден"));
     }
 
     @Test

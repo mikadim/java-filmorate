@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.controller.converter.exceptions;
+package ru.yandex.practicum.filmorate.exception;
 
 public class DtoException extends RuntimeException {
     public DtoException(String message) {
