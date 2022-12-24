@@ -5,67 +5,78 @@ import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.dto.UserRequestDto;
-import ru.yandex.practicum.filmorate.controller.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
+@Validated
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-    private List<User> users = new ArrayList<>();
-    private final ConversionService conversionService;
-    private final UserMapper userMapper;
-    private UserIdGenerator idGenerator;
+    private final UserService service;
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(ConversionService conversionService, UserMapper userMapper, UserIdGenerator idGenerator) {
-        this.conversionService = conversionService;
-        this.userMapper = userMapper;
-        this.idGenerator = idGenerator;
+    public UserController(UserService service) {
+        this.service = service;
     }
 
     @PostMapping
     public ResponseEntity<User> addUser(@RequestBody @Valid @NotNull UserRequestDto dto) {
-        dto.setId(idGenerator.getId());
-        User user = conversionService.convert(dto, User.class);
-        users.add(user);
+        User user = service.addUser(dto);
         log.info("Добавлен новый пользователь: {}", user.toString());
-        return new ResponseEntity<User>(user, HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PutMapping
     public ResponseEntity<User> updateUser(@RequestBody @Valid @NotNull UserRequestDto dto) {
-        User user = conversionService.convert(dto, User.class);
-
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getId() == user.getId()) {
-                users.set(i, user);
-                log.info("Обновление данных пользователя: {}", user.toString());
-                return new ResponseEntity<User>(user, HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+        User user = service.updateUser(dto);
+        log.info("Обновление данных пользователя: {}", user.toString());
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public List<User> getAllUsers() {
-        return users;
+    public ResponseEntity<List<User>> getAllUsers() {
+        return new ResponseEntity<>(service.getUsers(), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/clearfortest")
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUser(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(service.getUser(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addFriend(@PathVariable("id") Integer id, @PathVariable("friendId") Integer friendId) {
+        service.addFriends(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<List<User>> getUserFriends(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(service.getUserFriends(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public ResponseEntity<List<User>> getCommonFriends(@PathVariable("id") Integer id, @PathVariable("otherId") Integer otherId) {
+        return new ResponseEntity<>(service.getCommonFriends(id, otherId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteFriend(@PathVariable("id") Integer id, @PathVariable("friendId") Integer friendId) {
+        service.deleteFriends(id, friendId);
+    }
+
+    @DeleteMapping(value = "/clear-for-test")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteUsers() {
-        users.clear();
-        idGenerator = new UserIdGenerator();
+        service.delete();
     }
-
 }

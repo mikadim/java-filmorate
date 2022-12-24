@@ -1,0 +1,11 @@
+{
+  "name": "best",
+  "description": "super film",
+  "releaseDate": "1967-03-25",
+  "duration": 100,
+  "likes": [
+    1,
+    2,
+    3
+  ]
+}

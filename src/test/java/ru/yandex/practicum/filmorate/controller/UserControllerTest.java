@@ -1,18 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 
 import org.springframework.test.web.servlet.MockMvc;
-
-
+import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,10 +17,12 @@ import static ru.yandex.practicum.filmorate.utils.TestControllerUtils.readReques
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserControllerTest {
     public final static String USER_URL_PATH = "/users";
-    public final static String USER_URL_PATH_TEST = "/users/clearfortest";
+    public final static String USER_URL_PATH_TEST = "/users/clear-for-test";
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,11 +30,10 @@ public class UserControllerTest {
     @BeforeEach
     public void setUp() throws Exception {
         mockMvc.perform(delete(USER_URL_PATH_TEST));
+        applicationContext.getBean(UserIdGenerator.class).setForTest();
     }
 
-    
     @Test
-    @Order(1)
     @DisplayName("1. Корректный PUT проходит без ошибок")
     void sendCorrectPut() throws Exception {
         mockMvc.perform(
@@ -44,14 +41,13 @@ public class UserControllerTest {
                         .content(readRequest("json", "user.json"))
                         .contentType(MediaType.APPLICATION_JSON));
         mockMvc.perform(
-                put(USER_URL_PATH)
-                        .content(readRequest("json", "update_user.json"))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        put(USER_URL_PATH)
+                                .content(readRequest("json", "update_user.json"))
+                                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
-    @Order(2)
     @DisplayName("2. Корректный POST проходит без ошибок")
     void sendCorrectPost() throws Exception {
         mockMvc.perform(
@@ -63,7 +59,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(3)
     @DisplayName("3. Некорректный POST возвращает 400")
     void sendIncorrectPost() throws Exception {
         mockMvc.perform(
@@ -74,7 +69,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(4)
     @DisplayName("4. Не корректный PUT возвращает 400")
     void sendIncorrectPut() throws Exception {
         mockMvc.perform(
@@ -85,7 +79,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Order(5)
     @DisplayName("5. Get корректно возвращает данные")
     void sendCorrectGet() throws Exception {
         mockMvc.perform(

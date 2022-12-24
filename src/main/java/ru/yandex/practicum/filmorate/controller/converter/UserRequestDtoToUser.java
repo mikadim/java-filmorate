@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.controller.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.controller.converter.exceptions.DtoException;
+import ru.yandex.practicum.filmorate.exception.DtoException;
 import ru.yandex.practicum.filmorate.controller.dto.UserRequestDto;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -11,7 +11,7 @@ public class UserRequestDtoToUser implements Converter<UserRequestDto, User> {
 
     @Override
     public User convert(UserRequestDto dto) {
-        if (dto==null) {
+        if (dto == null) {
             throw new DtoException("пустой dto не подлежит конвертации в объект Film");
         }
         User user = new User();
@@ -20,6 +20,9 @@ public class UserRequestDtoToUser implements Converter<UserRequestDto, User> {
         user.setLogin(dto.getLogin());
         user.setName(dto.getName());
         user.setBirthday(dto.getBirthday());
+        if (dto.getFriends() != null) {
+            user.setFriends(dto.getFriends());
+        }
         return user;
     }
 }

@@ -5,66 +5,71 @@ import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
-import ru.yandex.practicum.filmorate.controller.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping(value = "/films")
 public class FilmController {
-    private List<Film> films = new ArrayList<>();
-    private final ConversionService conversionService;
-    private final FilmMapper filmMapper;
-    private FilmIdGenerator idGenerator;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final FilmService service;
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
 
-    public FilmController(ConversionService conversionService, FilmMapper filmMapper, FilmIdGenerator idGenerator) {
-        this.conversionService = conversionService;
-        this.filmMapper = filmMapper;
-        this.idGenerator = idGenerator;
+    public FilmController(FilmService service) {
+        this.service = service;
     }
 
     @PostMapping
     public ResponseEntity<Film> addFilm(@RequestBody @Valid @NotNull FilmRequestDto dto) {
-        dto.setId(idGenerator.getId());
-        Film film = conversionService.convert(dto, Film.class);
-        films.add(film);
+        Film film = service.addFilm(dto);
         log.info("Добавлен новый фильм: {}", film.toString());
-        return new ResponseEntity<Film>(film, HttpStatus.OK);
+        return new ResponseEntity<>(film, HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateUser(@RequestBody @Valid @NotNull FilmRequestDto dto) {
-
-        Film film = conversionService.convert(dto, Film.class);
-
-        for (int i = 0; i < films.size(); i++) {
-            if (films.get(i).getId() == film.getId()) {
-                films.set(i, film);
-                log.info("Добавлен новый фильм: {}", film.toString());
-                return new ResponseEntity<Film>(film, HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<Film>(film, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Film> updateFilm(@RequestBody @Valid @NotNull FilmRequestDto dto) {
+        Film film = service.updateFilm(dto);
+        log.info("Обновление данных фильма: {}", film.toString());
+        return new ResponseEntity<>(film, HttpStatus.OK);
     }
 
     @GetMapping
-    public List<Film> getAllFilms() {
-        return films;
+    public ResponseEntity<List<Film>> getAllFilms() {
+        return new ResponseEntity<>(service.getFilms(), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/clearfortest")
+    @GetMapping("/{id}")
+    public ResponseEntity<Film> getFilm(@PathVariable("id") Integer id) {
+        return new ResponseEntity<>(service.getFilm(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void addLike(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
+        service.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteLike(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
+        service.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<Film>> getPopular(@RequestParam(name = "count", defaultValue = "10") Integer count) {
+        return new ResponseEntity<>(service.getPopular(count), HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/clear-for-test")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteFilms() {
-        films.clear();
-        idGenerator = new FilmIdGenerator();
+        service.delete();
     }
 }

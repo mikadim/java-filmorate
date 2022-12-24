@@ -9,4 +9,8 @@ public class FilmIdGenerator {
     public int getId() {
         return ++id;
     }
+
+    public void setForTest() {
+        id = 0;
+    }
 }
