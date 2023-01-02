@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
+import ru.yandex.practicum.filmorate.controller.dto.MpaDto;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -24,7 +25,7 @@ public class FilmValidatorTest {
         filmRequestDto = getFilmRequestDto("Avatar", "012345678901234567890123456789012345678901234567" +
                         "89012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" +
                         "012345678901234567890123456789012345678901234567890123456789",
-                LocalDate.of(1895, 12, 28), 1);
+                LocalDate.of(1895, 12, 28), 1, new MpaDto(1));
     }
 
     @Test
