@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +20,7 @@ import static ru.yandex.practicum.filmorate.controller.UserControllerTest.USER_U
 import static ru.yandex.practicum.filmorate.controller.UserControllerTest.USER_URL_PATH_TEST;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
 @AutoConfigureMockMvc
 public class FilmControllerTest {
     public final static String FILM_URL_PATH = "/films";
@@ -156,12 +158,12 @@ public class FilmControllerTest {
     @DisplayName("10. Удаление лайка корректного пользователя проходит без ошибок")
     void sendCorrectLikeDelete() throws Exception {
         mockMvc.perform(
-                post(FILM_URL_PATH)
-                        .content(readRequest("json", "film_with_like.json"))
-                        .contentType(MediaType.APPLICATION_JSON));
-        mockMvc.perform(
                 post(USER_URL_PATH)
                         .content(readRequest("json", "user.json"))
+                        .contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(
+                post(FILM_URL_PATH)
+                        .content(readRequest("json", "film_with_like.json"))
                         .contentType(MediaType.APPLICATION_JSON));
         mockMvc.perform(
                         delete(FILM_URL_PATH + "/1/like/1"))
@@ -172,11 +174,15 @@ public class FilmControllerTest {
     @DisplayName("11. Удаление лайка некорректного пользователя возвращает ошибку")
     void sendIncorrectLikeDelete() throws Exception {
         mockMvc.perform(
+                post(USER_URL_PATH)
+                        .content(readRequest("json", "user.json"))
+                        .contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(
                 post(FILM_URL_PATH)
                         .content(readRequest("json", "film_with_like.json"))
                         .contentType(MediaType.APPLICATION_JSON));
         mockMvc.perform(
-                        delete(FILM_URL_PATH + "/1/like/1"))
+                        delete(FILM_URL_PATH + "/1/like/2"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("['Ошибка в хранилище пользователей - ']").value("Пользователь не найден"));
     }
@@ -184,6 +190,18 @@ public class FilmControllerTest {
     @Test
     @DisplayName("12. Get самого популярного фильма возвращает корретный фильм")
     void getPopularFilm() throws Exception {
+        mockMvc.perform(
+                post(USER_URL_PATH)
+                        .content(readRequest("json", "user.json"))
+                        .contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(
+                post(USER_URL_PATH)
+                        .content(readRequest("json", "2nd_user.json"))
+                        .contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(
+                post(USER_URL_PATH)
+                        .content(readRequest("json", "3d_user.json"))
+                        .contentType(MediaType.APPLICATION_JSON));
         mockMvc.perform(
                 post(FILM_URL_PATH)
                         .content(readRequest("json", "film_with_like.json"))

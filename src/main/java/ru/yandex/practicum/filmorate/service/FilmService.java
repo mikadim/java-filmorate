@@ -2,11 +2,11 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.exception.FilmStrorageError;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -19,22 +19,20 @@ public class FilmService {
     private final UserStorage userStorage;
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
 
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(@Qualifier("dbStorage") FilmStorage filmStorage, @Qualifier("dbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
 
     public void addLike(Integer id, Integer userId) {
-        Film film = filmStorage.getFilm(id);
-        if (userStorage.getUser(userId) != null) {
-            film.setLike(id);
+        if (filmStorage.getFilm(id) != null && userStorage.getUser(userId) != null) {
+            filmStorage.addLike(id, userId);
         }
     }
 
     public void deleteLike(Integer id, Integer userId) {
-        Film film = filmStorage.getFilm(id);
-        if (userStorage.getUser(userId) != null) {
-            film.getLikes().remove(userId);
+        if (filmStorage.getFilm(id) != null && userStorage.getUser(userId) != null) {
+            filmStorage.removeLike(id, userId);
         }
     }
 
@@ -59,14 +57,8 @@ public class FilmService {
     }
 
     public void delete() {
-        List<Integer> collect = filmStorage.getFilms().stream().map(Film::getId).collect(Collectors.toList());
-        for (Integer id : collect) {
-            try {
-                filmStorage.deleteFilm(id);
-            } catch (FilmStrorageError e) {
-                log.debug("Фильм с id={} не найден", id);
-            }
-        }
+        filmStorage.deleteAllFilms();
+        userStorage.deleteAllUsers();
     }
 
     public List<Film> getPopular(Integer count) {

@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.dto.UserRequestDto;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.exception.FilmStrorageError;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -14,9 +14,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+
     private final UserStorage storage;
 
-    public UserService(UserStorage storage) {
+    public UserService(@Qualifier("dbStorage") UserStorage storage) {
         this.storage = storage;
     }
 
@@ -34,17 +35,11 @@ public class UserService {
     }
 
     public void addFriends(Integer id, Integer friendId) {
-        User user = storage.getUser(id);
-        User friend = storage.getUser(friendId);
-        user.setFriend(friendId);
-        friend.setFriend(id);
+        storage.addFriend(id, friendId);
     }
 
     public void deleteFriends(Integer id, Integer friendId) {
-        User user = storage.getUser(id);
-        User friend = storage.getUser(friendId);
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(id);
+        storage.removeFriend(id, friendId);
     }
 
     public User addUser(UserRequestDto dto) {
@@ -68,14 +63,7 @@ public class UserService {
     }
 
     public void delete() {
-        List<Integer> collect = storage.getUsers().stream().map(user -> user.getId()).collect(Collectors.toList());
-        for (Integer id : collect) {
-            try {
-                storage.deleteUser(id);
-            } catch (FilmStrorageError e) {
-                log.debug("Пользователь с id={} не найден", id);
-            }
-        }
+        storage.deleteAllUsers();
     }
 
     public List<User> getCommonFriends(Integer id, Integer otherId) {

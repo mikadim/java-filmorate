@@ -4,7 +4,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.exception.FilmStrorageError;
+import ru.yandex.practicum.filmorate.exception.FilmStorageError;
 import ru.yandex.practicum.filmorate.exception.UserStorageError;
 import ru.yandex.practicum.filmorate.utils.FilmIdGenerator;
 
@@ -44,7 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 return film;
             }
         }
-        throw new FilmStrorageError("Фильм для обновления не найден");
+        throw new FilmStorageError("Фильм для обновления не найден");
     }
 
     @Override
@@ -54,7 +54,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                 films.remove(i);
             }
         }
-        throw new FilmStrorageError("Фильм для удаления не найден");
+        throw new FilmStorageError("Фильм для удаления не найден");
     }
 
     @Override
@@ -65,5 +65,20 @@ public class InMemoryFilmStorage implements FilmStorage {
             }
         }
         throw new UserStorageError("Фильм не найден");
+    }
+
+    @Override
+    public void deleteAllFilms() {
+        films.clear();
+    }
+
+    @Override
+    public void addLike(Integer id, Integer userId) {
+        getFilm(id).setLike(userId);
+    }
+
+    @Override
+    public void removeLike(Integer id, Integer userId) {
+        getFilm(id).getLikes().remove(userId);
     }
 }

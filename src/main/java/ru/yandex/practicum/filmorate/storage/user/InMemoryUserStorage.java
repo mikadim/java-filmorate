@@ -65,4 +65,19 @@ public class InMemoryUserStorage implements UserStorage {
         }
         throw new UserStorageError("Пользователь не найден");
     }
+
+    @Override
+    public void addFriend(Integer id, Integer friendId) {
+        getUser(id).setFriend(friendId);
+    }
+
+    @Override
+    public void removeFriend(Integer id, Integer friendId) {
+        getUser(id).getFriends().remove(friendId);
+    }
+
+    @Override
+    public void deleteAllUsers() {
+        users.clear();
+    }
 }
