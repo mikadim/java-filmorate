@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.MpaStorageError;
+import ru.yandex.practicum.filmorate.exception.MpaStorageException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.sql.ResultSet;
@@ -23,7 +23,12 @@ public class MpaStorage {
         if (list.size() > 0) {
             return list.get(0);
         }
-        throw new MpaStorageError("MPA не найден");
+        throw new MpaStorageException("MPA не найден");
+    }
+
+    public List<Mpa> getAllMpa() {
+        String query = "select * from MPA";
+        return jdbcTemplate.query(query, this::mapRowToMpa);
     }
 
     private Mpa mapRowToMpa(ResultSet resultSet, int rowNum) throws SQLException {
@@ -31,10 +36,5 @@ public class MpaStorage {
         mpa.setId(resultSet.getInt("ID"));
         mpa.setName(resultSet.getString("NAME"));
         return mpa;
-    }
-
-    public List<Mpa> getAllMpa() {
-        String query = "select * from MPA";
-        return jdbcTemplate.query(query, this::mapRowToMpa);
     }
 }

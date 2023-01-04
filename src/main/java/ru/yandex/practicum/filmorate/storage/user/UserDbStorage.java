@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.dto.UserRequestDto;
-import ru.yandex.practicum.filmorate.exception.UserStorageError;
+import ru.yandex.practicum.filmorate.exception.UserStorageException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final ConversionService conversionService;
+
 
     public UserDbStorage(JdbcTemplate jdbcTemplate, ConversionService conversionService) {
         this.jdbcTemplate = jdbcTemplate;
@@ -46,7 +47,7 @@ public class UserDbStorage implements UserStorage {
         if (update > 0) {
             return getUser(dto.getId());
         }
-        throw new UserStorageError("ользователь для обновления не найден");
+        throw new UserStorageException("Пользователь для обновления не найден");
     }
 
     @Override
@@ -70,9 +71,8 @@ public class UserDbStorage implements UserStorage {
         if (list.size() > 0) {
             return list.get(0);
         }
-        throw new UserStorageError("Пользователь не найден");
+        throw new UserStorageException("Пользователь не найден");
     }
-
 
     @Override
     public void addFriend(Integer id, Integer friendId) {
@@ -83,8 +83,8 @@ public class UserDbStorage implements UserStorage {
         if (list.size() == 2) {
             String query = "insert into FRIENDS (ID_USER_1, ID_USER_2) values (?, ?)";
             jdbcTemplate.update(query, id, friendId);
-        } else {
-            throw new UserStorageError("Пользователь не найден");
+        } else if (list.size() < 2) {
+            throw new UserStorageException("Пользователь не найден");
         }
     }
 

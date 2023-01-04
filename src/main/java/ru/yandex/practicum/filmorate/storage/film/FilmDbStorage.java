@@ -1,13 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.core.convert.ConversionService;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.dto.FilmRequestDto;
 import ru.yandex.practicum.filmorate.controller.dto.GenreDto;
-import ru.yandex.practicum.filmorate.exception.FilmStorageError;
+import ru.yandex.practicum.filmorate.exception.FilmStorageException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -16,10 +17,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component("dbStorage")
@@ -46,21 +44,17 @@ public class FilmDbStorage implements FilmStorage {
             return stmt;
         }, key);
         Integer filmId = key.getKeyAs(Integer.class);
-        String queryFilmGenre = "insert into FILM_GENRE (ID_FILM, ID_GENRE) values (?, ?)";
+
         Optional.ofNullable(dto.getGenres()).ifPresent(g -> {
-            for (GenreDto genre : g) {
-                jdbcTemplate.update(queryFilmGenre,
-                        filmId,
-                        genre.getId());
-            }
+            String query = "insert into FILM_GENRE (ID_FILM, ID_GENRE) values (?, ?)";
+            batchUpdateFilmIdPlusAnotherId(g.stream().map((genre) -> List.of(filmId, genre.getId()))
+                    .collect(Collectors.toList()), query);
         });
-        String queryFilmLikes = "insert into LIKES (ID_FILM, ID_USER) values (?, ?)";
+
         Optional.ofNullable(dto.getLikes()).ifPresent(g -> {
-            for (Integer l : g) {
-                jdbcTemplate.update(queryFilmLikes,
-                        filmId,
-                        l);
-            }
+            String query = "insert into LIKES (ID_FILM, ID_USER) values (?, ?)";
+            batchUpdateFilmIdPlusAnotherId(g.stream().map((likeId) -> List.of(filmId, likeId))
+                    .collect(Collectors.toList()), query);
         });
         return getFilm(filmId);
     }
@@ -79,21 +73,30 @@ public class FilmDbStorage implements FilmStorage {
         if (update > 0) {
 
             String checkGenres = "select ID_GENRE from FILM_GENRE where ID_FILM = ?";
-            List<Integer> filmGenres = jdbcTemplate.query(checkGenres, (r, n) -> r.getInt("ID_GENRE"), idFilm);
+            final List<Integer> filmGenres = jdbcTemplate.query(checkGenres, (r, n) -> r.getInt("ID_GENRE"), idFilm);
+
             Optional.ofNullable(dto.getGenres()).ifPresentOrElse(g -> {
-                        Set<Integer> genresId = g.stream().map(genre -> genre.getId()).collect(Collectors.toSet());
-                        for (Integer genreId : genresId) {
-                            if (!filmGenres.contains(genreId)) {
-                                String queryFilmGenre = "insert into FILM_GENRE (ID_FILM, ID_GENRE) values (?, ?)";
-                                jdbcTemplate.update(queryFilmGenre, idFilm, genreId);
-                            } else {
-                                filmGenres.remove(genreId);
-                            }
-                        }
-                        for (Integer i : filmGenres) {
-                            String queryDelFilmGenre = "delete from FILM_GENRE where ID_FILM = ? and ID_GENRE = ?";
-                            jdbcTemplate.update(queryDelFilmGenre, idFilm, i);
-                        }
+                        List<Integer> filmGenresForInsert = g.stream()
+                                .map(genre -> genre.getId())
+                                .distinct()
+                                .filter((id) -> !filmGenres.contains(id))
+                                .collect(Collectors.toList());
+                        List<Integer> filmGenresForDelete = filmGenres.stream()
+                                .filter(element -> {
+                                    for (GenreDto dt : g) {
+                                        if (element == dt.getId()) {
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                })
+                                .collect(Collectors.toList());
+                        String queryAddFilmGenre = "insert into FILM_GENRE (ID_FILM, ID_GENRE) values (?, ?)";
+                        batchUpdateFilmIdPlusAnotherId(filmGenresForInsert.stream().map((val) -> List.of(idFilm, val))
+                                .collect(Collectors.toList()), queryAddFilmGenre);
+                        String queryDeleteFilmGenre = "delete from FILM_GENRE where ID_FILM = ? and ID_GENRE = ?";
+                        batchUpdateFilmIdPlusAnotherId(filmGenresForDelete.stream().map((val) -> List.of(idFilm, val))
+                                .collect(Collectors.toList()), queryDeleteFilmGenre);
                     }, () -> {
                         String queryDelFilmGenres = "delete from FILM_GENRE where ID_FILM = ?";
                         jdbcTemplate.update(queryDelFilmGenres, idFilm);
@@ -101,7 +104,7 @@ public class FilmDbStorage implements FilmStorage {
             );
             return getFilm(idFilm);
         }
-        throw new FilmStorageError("Фильм для обновления не найден");
+        throw new FilmStorageException("Фильм для обновления не найден");
     }
 
     @Override
@@ -127,16 +130,22 @@ public class FilmDbStorage implements FilmStorage {
         if (list.size() > 0) {
             return list.get(0);
         }
-        throw new FilmStorageError("Фильм не найден");
+        throw new FilmStorageException("Фильм не найден");
     }
 
     @Override
     public void addLike(Integer id, Integer userId) {
-        String check = "select COUNT(*) as TOTAL from LIKES where ID_FILM = ? AND ID_USER = ?";
-        Integer total = jdbcTemplate.queryForObject(check, (r, i) -> r.getInt("TOTAL"), id, userId);
-        if (total == 0) {
+        String check = "select ID from FILMS where ID = ? " +
+                "union all " +
+                "select ID from USERS where ID = ? " +
+                "union all " +
+                "select ID_FILM from LIKES where ID_FILM = ? AND ID_USER = ?";
+        List<Integer> list = jdbcTemplate.query(check, (r, i) -> r.getInt("ID"), id, userId, id, userId);
+        if (list.size() == 2) {
             String query = "insert into LIKES (ID_FILM, ID_USER) values (?, ?)";
             jdbcTemplate.update(query, id, userId);
+        } else if (list.size() < 2) {
+            throw new FilmStorageException("Фильм или пользователь не найден");
         }
     }
 
@@ -176,5 +185,22 @@ public class FilmDbStorage implements FilmStorage {
                         .map(Integer::valueOf)
                         .collect(Collectors.toSet())));
         return film;
+    }
+
+    private void batchUpdateFilmIdPlusAnotherId(final List<List<Integer>> rowForAdd, final String query) {
+        jdbcTemplate.batchUpdate(query,
+                new BatchPreparedStatementSetter() {
+                    @Override
+                    public void setValues(PreparedStatement ps, int i) throws SQLException {
+                        List<Integer> row = rowForAdd.get(i);
+                        ps.setInt(1, row.get(0));
+                        ps.setInt(2, row.get(1));
+                    }
+
+                    @Override
+                    public int getBatchSize() {
+                        return rowForAdd.size();
+                    }
+                });
     }
 }

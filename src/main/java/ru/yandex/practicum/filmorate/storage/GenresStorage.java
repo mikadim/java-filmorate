@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.GenreStorageError;
+import ru.yandex.practicum.filmorate.exception.GenreStorageException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
@@ -23,7 +23,7 @@ public class GenresStorage {
         if (list.size() > 0) {
             return list.get(0);
         }
-        throw new GenreStorageError("Жанр не найден");
+        throw new GenreStorageException("Жанр не найден");
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
