@@ -3,5 +3,8 @@
   "name": "vasil",
   "description": "vasil bill",
   "releaseDate": "1967-03-25",
-  "duration": 100
+  "duration": 100,
+  "mpa": {
+    "id": 1
+  }
 }

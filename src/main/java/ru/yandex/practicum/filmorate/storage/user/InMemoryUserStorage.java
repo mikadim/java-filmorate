@@ -4,7 +4,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.dto.UserRequestDto;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.exception.UserStorageError;
+import ru.yandex.practicum.filmorate.exception.UserStorageException;
 import ru.yandex.practicum.filmorate.utils.UserIdGenerator;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class InMemoryUserStorage implements UserStorage {
                 return user;
             }
         }
-        throw new UserStorageError("Пользователь для обновления не найден");
+        throw new UserStorageException("Пользователь для обновления не найден");
     }
 
     @Override
@@ -53,7 +53,7 @@ public class InMemoryUserStorage implements UserStorage {
                 users.remove(i);
             }
         }
-        throw new UserStorageError("Пользователь для удаления не найден");
+        throw new UserStorageException("Пользователь для удаления не найден");
     }
 
     @Override
@@ -63,6 +63,21 @@ public class InMemoryUserStorage implements UserStorage {
                 return users.get(i);
             }
         }
-        throw new UserStorageError("Пользователь не найден");
+        throw new UserStorageException("Пользователь не найден");
+    }
+
+    @Override
+    public void addFriend(Integer id, Integer friendId) {
+        getUser(id).setFriend(friendId);
+    }
+
+    @Override
+    public void removeFriend(Integer id, Integer friendId) {
+        getUser(id).getFriends().remove(friendId);
+    }
+
+    @Override
+    public void deleteAllUsers() {
+        users.clear();
     }
 }

@@ -4,8 +4,10 @@ import ru.yandex.practicum.filmorate.controller.validator.FilmValid;
 
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @FilmValid
@@ -18,6 +20,9 @@ public class FilmRequestDto {
     @Positive
     private int duration;
     private Set<Integer> likes;
+    @NotNull
+    private MpaDto mpa;
+    private List<GenreDto> genres;
 
     public int getId() {
         return id;
@@ -67,6 +72,22 @@ public class FilmRequestDto {
         this.likes = likes;
     }
 
+    public MpaDto getMpa() {
+        return mpa;
+    }
+
+    public void setMpa(MpaDto mpa) {
+        this.mpa = mpa;
+    }
+
+    public List<GenreDto> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<GenreDto> genres) {
+        this.genres = genres;
+    }
+
     @Override
     public String toString() {
         return "FilmRequestDto{" +
@@ -78,3 +99,4 @@ public class FilmRequestDto {
                 '}';
     }
 }
+

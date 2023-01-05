@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 
 public class Film {
@@ -13,7 +11,9 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
-    private Set<Integer> likes = new HashSet<Integer>();
+    private Set<Integer> likes = new HashSet<>();
+    private Mpa mpa;
+    private List<Genre> genres = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -65,6 +65,26 @@ public class Film {
 
     public void setLikes(Set<Integer> likes) {
         this.likes = likes;
+    }
+
+    public Mpa getMpa() {
+        return mpa;
+    }
+
+    public void setMpa(Mpa mpa) {
+        this.mpa = mpa;
+    }
+
+    public List<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
+    }
+
+    public void setGenre(Genre genre) {
+        genres.add(genre);
     }
 
     @Override

@@ -7,6 +7,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @UserValid
@@ -67,6 +69,15 @@ public class UserRequestDto {
 
     public void setFriends(Set<Integer> friends) {
         this.friends = friends;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("LOGIN", login);
+        values.put("NAME", name);
+        values.put("EMAIL", email);
+        values.put("BIRTHDAY", birthday);
+        return values;
     }
 
     @Override
